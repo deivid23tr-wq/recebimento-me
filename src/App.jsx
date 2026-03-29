@@ -727,7 +727,7 @@ export default function App() {
               </div>
 
               <div style={styles.chartCard}>
-                <h3 style={styles.chartTitle}>Top clientes</h3>
+                <h3 style={styles.chartTitle}>Clientes</h3>
                 <div className="app-chart-box" style={styles.chartBox}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={graficoClientes}>
