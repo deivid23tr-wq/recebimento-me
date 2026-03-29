@@ -16,6 +16,7 @@ import {
   LineChart,
   Line,
 } from "recharts";
+import logo from "./assets/logo.png";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -374,7 +375,7 @@ export default function App() {
         <header className="app-header" style={styles.header}>
           <div className="app-header-left" style={styles.headerLeft}>
             <div className="app-logo-box" style={styles.logoBox}>
-              <img src="/ball-logo.png" alt="Logo Ball" style={styles.logo} />
+              <img src={logo} alt="Logo Ball" style={styles.logo} />
             </div>
 
             <div>
@@ -663,7 +664,7 @@ export default function App() {
               </div>
 
               <div style={styles.kpiCard}>
-                <div style={styles.kpiLabel}>Clientes únicos</div>
+                <div style={styles.kpiLabel}>Clientes</div>
                 <div className="app-kpi-value" style={styles.kpiValue}>
                   {indicadores.totalClientes}
                 </div>
@@ -685,7 +686,7 @@ export default function App() {
             </div>
 
             <div className="app-chart-grid" style={styles.chartGrid}>
-              <div style={styles.chartCard}>
+              <div className="app-card" style={styles.card}>
                 <h3 style={styles.chartTitle}>Quantidade por material</h3>
                 <div className="app-chart-box" style={styles.chartBox}>
                   <ResponsiveContainer width="100%" height="100%">
@@ -701,8 +702,8 @@ export default function App() {
                 </div>
               </div>
 
-              <div style={styles.chartCard}>
-                <h3 style={styles.chartTitle}>Distribuição por material</h3>
+              <div className="app-card" style={styles.card}>
+                <h3 style={styles.chartTitle}>Participação por material</h3>
                 <div className="app-chart-box" style={styles.chartBox}>
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -710,7 +711,9 @@ export default function App() {
                         data={graficoMateriais}
                         dataKey="quantidade"
                         nameKey="nome"
-                        outerRadius={100}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={90}
                         label
                       >
                         {graficoMateriais.map((entry, index) => (
@@ -721,28 +724,29 @@ export default function App() {
                         ))}
                       </Pie>
                       <Tooltip />
+                      <Legend />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
               </div>
 
-              <div style={styles.chartCard}>
-                <h3 style={styles.chartTitle}>Clientes</h3>
+              <div className="app-card" style={styles.card}>
+                <h3 style={styles.chartTitle}>Top clientes</h3>
                 <div className="app-chart-box" style={styles.chartBox}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={graficoClientes}>
+                    <BarChart data={graficoClientes} layout="vertical" margin={{ left: 20 }}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="cliente" />
-                      <YAxis />
+                      <XAxis type="number" />
+                      <YAxis dataKey="cliente" type="category" width={120} />
                       <Tooltip />
                       <Legend />
-                      <Bar dataKey="quantidade" fill="#0f172a" radius={[8, 8, 0, 0]} />
+                      <Bar dataKey="quantidade" fill="#0f172a" radius={[0, 8, 8, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
               </div>
 
-              <div style={styles.chartCard}>
+              <div className="app-card" style={styles.card}>
                 <h3 style={styles.chartTitle}>Evolução por data</h3>
                 <div className="app-chart-box" style={styles.chartBox}>
                   <ResponsiveContainer width="100%" height="100%">
@@ -755,7 +759,7 @@ export default function App() {
                       <Line
                         type="monotone"
                         dataKey="quantidade"
-                        stroke="#2563eb"
+                        stroke="#0ea5e9"
                         strokeWidth={3}
                       />
                     </LineChart>
@@ -774,274 +778,300 @@ const styles = {
   page: {
     minHeight: "100vh",
     background:
-      "linear-gradient(180deg, #eef4ff 0%, #f8fbff 45%, #f2f5f9 100%)",
-    padding: "14px",
-    fontFamily: "Inter, Arial, sans-serif",
-    color: "#0f172a",
+      "linear-gradient(180deg, #f8fbff 0%, #eef4fb 50%, #eaf1f8 100%)",
+    padding: "24px",
+    fontFamily:
+      "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   },
+
   container: {
-    maxWidth: "1300px",
+    maxWidth: "1320px",
     margin: "0 auto",
   },
+
   header: {
-    background: "rgba(255,255,255,0.92)",
-    backdropFilter: "blur(12px)",
-    border: "1px solid #dbe7ff",
-    borderRadius: "24px",
+    background: "rgba(255,255,255,0.96)",
+    border: "1px solid #dbe7f3",
+    borderRadius: "28px",
     padding: "22px 24px",
-    boxShadow: "0 18px 40px rgba(37,99,235,0.08)",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    gap: "20px",
+    gap: "16px",
     flexWrap: "wrap",
-    marginBottom: "18px",
+    boxShadow: "0 20px 50px rgba(15, 23, 42, 0.08)",
+    marginBottom: "20px",
   },
+
   headerLeft: {
     display: "flex",
     alignItems: "center",
     gap: "18px",
-    flexWrap: "wrap",
   },
+
   logoBox: {
-    width: "110px",
-    height: "110px",
-    borderRadius: "22px",
-    background: "#0f172a",
+    width: "96px",
+    height: "96px",
+    borderRadius: "24px",
+    background: "linear-gradient(135deg, #ffffff 0%, #f1f7fd 100%)",
+    border: "1px solid #dbeafe",
     display: "flex",
-    justifyContent: "center",
     alignItems: "center",
-    boxShadow: "0 10px 30px rgba(15,23,42,0.20)",
-    padding: "16px",
+    justifyContent: "center",
+    boxShadow: "0 12px 30px rgba(37, 99, 235, 0.12)",
+    overflow: "hidden",
     flexShrink: 0,
   },
+
   logo: {
-    width: "100%",
-    height: "100%",
+    width: "82%",
+    height: "82%",
     objectFit: "contain",
+    display: "block",
   },
+
   title: {
     margin: 0,
-    fontSize: "38px",
-    fontWeight: 800,
+    fontSize: "34px",
     lineHeight: 1.08,
+    fontWeight: 800,
     color: "#0f172a",
+    letterSpacing: "-0.03em",
   },
+
   subtitle: {
     margin: "8px 0 0 0",
     color: "#475569",
     fontSize: "15px",
+    lineHeight: 1.55,
+    maxWidth: "760px",
   },
+
   exportButton: {
-    background: "linear-gradient(135deg, #2563eb, #0f172a)",
-    color: "#fff",
+    background: "linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%)",
+    color: "#ffffff",
     border: "none",
     borderRadius: "16px",
     padding: "14px 20px",
-    fontSize: "15px",
     fontWeight: 700,
     cursor: "pointer",
-    boxShadow: "0 10px 24px rgba(37,99,235,0.20)",
-    display: "flex",
+    boxShadow: "0 10px 24px rgba(37, 99, 235, 0.25)",
+    display: "inline-flex",
     alignItems: "center",
-    justifyContent: "center",
+    gap: "8px",
   },
+
   errorBox: {
-    background: "#fee2e2",
-    color: "#991b1b",
-    border: "1px solid #fecaca",
+    background: "#fff1f2",
+    border: "1px solid #fecdd3",
+    color: "#be123c",
     padding: "14px 16px",
-    borderRadius: "14px",
-    marginBottom: "16px",
+    borderRadius: "16px",
+    marginBottom: "18px",
     fontWeight: 600,
   },
+
   tabs: {
     display: "flex",
-    gap: "10px",
-    marginBottom: "18px",
-    flexWrap: "wrap",
+    gap: "12px",
+    marginBottom: "20px",
   },
+
   tab: {
+    border: "1px solid #cbd5e1",
     background: "#ffffff",
     color: "#334155",
-    border: "1px solid #dbe7ff",
+    padding: "12px 18px",
     borderRadius: "16px",
-    padding: "13px 18px",
-    fontWeight: 700,
     cursor: "pointer",
-    boxShadow: "0 6px 18px rgba(15,23,42,0.04)",
+    fontWeight: 700,
+    transition: "all 0.2s ease",
   },
+
   tabActive: {
-    background: "linear-gradient(135deg, #2563eb, #0f172a)",
-    color: "#fff",
     border: "1px solid #2563eb",
+    background: "linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%)",
+    color: "#ffffff",
+    padding: "12px 18px",
     borderRadius: "16px",
-    padding: "13px 18px",
-    fontWeight: 700,
     cursor: "pointer",
-    boxShadow: "0 10px 24px rgba(37,99,235,0.22)",
+    fontWeight: 700,
+    boxShadow: "0 10px 22px rgba(37, 99, 235, 0.22)",
   },
+
   card: {
-    background: "rgba(255,255,255,0.92)",
-    backdropFilter: "blur(10px)",
-    border: "1px solid #dbe7ff",
-    borderRadius: "24px",
-    padding: "22px",
-    boxShadow: "0 18px 40px rgba(37,99,235,0.06)",
-    marginBottom: "18px",
+    background: "rgba(255,255,255,0.97)",
+    border: "1px solid #dbe7f3",
+    borderRadius: "26px",
+    padding: "24px",
+    boxShadow: "0 20px 45px rgba(15, 23, 42, 0.06)",
+    marginBottom: "20px",
   },
+
   sectionTitle: {
-    marginTop: 0,
-    marginBottom: "18px",
-    fontSize: "24px",
-    fontWeight: 800,
+    margin: "0 0 20px 0",
     color: "#0f172a",
+    fontSize: "26px",
+    fontWeight: 800,
+    letterSpacing: "-0.02em",
   },
+
   formGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-    gap: "16px",
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    gap: "18px",
   },
+
   filtersGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-    gap: "16px",
+    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+    gap: "18px",
   },
+
   label: {
     display: "block",
     marginBottom: "8px",
-    fontWeight: 700,
     color: "#334155",
+    fontWeight: 700,
     fontSize: "14px",
   },
+
   input: {
     width: "100%",
-    padding: "14px 16px",
-    borderRadius: "16px",
-    border: "1.5px solid #cbd5e1",
+    minHeight: "48px",
+    borderRadius: "14px",
+    border: "1px solid #cbd5e1",
     background: "#ffffff",
+    padding: "12px 14px",
     outline: "none",
-    fontSize: "16px",
-    boxSizing: "border-box",
-    minHeight: "52px",
-    appearance: "none",
+    color: "#0f172a",
   },
+
   fileInput: {
     width: "100%",
+    minHeight: "48px",
+    borderRadius: "14px",
+    border: "1px dashed #94a3b8",
+    background: "#f8fafc",
     padding: "12px 14px",
-    borderRadius: "16px",
-    border: "1.5px solid #cbd5e1",
-    background: "#ffffff",
-    boxSizing: "border-box",
-    minHeight: "52px",
+    outline: "none",
+    color: "#0f172a",
   },
+
   helperText: {
     marginTop: "8px",
-    fontSize: "13px",
     color: "#64748b",
+    fontSize: "13px",
   },
+
   previewImage: {
-    width: "220px",
+    width: "260px",
     height: "220px",
-    objectFit: "cover",
     borderRadius: "18px",
-    border: "1px solid #cbd5e1",
-    boxShadow: "0 10px 24px rgba(15,23,42,0.08)",
+    objectFit: "cover",
+    border: "1px solid #dbeafe",
+    boxShadow: "0 12px 28px rgba(15, 23, 42, 0.10)",
   },
+
   saveButton: {
-    background: "linear-gradient(135deg, #2563eb, #0f172a)",
-    color: "#fff",
     border: "none",
     borderRadius: "16px",
-    padding: "15px 20px",
-    fontSize: "16px",
-    fontWeight: 700,
+    padding: "14px 20px",
+    background: "linear-gradient(135deg, #0f172a 0%, #2563eb 100%)",
+    color: "#ffffff",
+    fontWeight: 800,
     cursor: "pointer",
-    boxShadow: "0 10px 24px rgba(37,99,235,0.20)",
+    boxShadow: "0 12px 24px rgba(15, 23, 42, 0.18)",
     display: "inline-flex",
     alignItems: "center",
-    justifyContent: "center",
+    gap: "8px",
   },
+
   table: {
     width: "100%",
     borderCollapse: "collapse",
-    background: "#fff",
-    borderRadius: "18px",
-    overflow: "hidden",
+    minWidth: "860px",
   },
+
   th: {
-    background: "#eaf1ff",
-    color: "#0f172a",
     textAlign: "left",
-    padding: "14px",
-    fontSize: "14px",
+    padding: "14px 12px",
+    background: "#eff6ff",
+    color: "#0f172a",
+    fontSize: "13px",
     fontWeight: 800,
-    borderBottom: "1px solid #dbe7ff",
+    borderBottom: "1px solid #dbeafe",
   },
+
   td: {
-    padding: "14px",
-    borderBottom: "1px solid #eef2f7",
+    padding: "14px 12px",
+    borderBottom: "1px solid #e2e8f0",
     color: "#334155",
+    verticalAlign: "middle",
     fontSize: "14px",
   },
+
   tdCenter: {
     padding: "18px",
     textAlign: "center",
     color: "#64748b",
+    borderBottom: "1px solid #e2e8f0",
   },
+
   tableImage: {
-    width: "72px",
-    height: "72px",
+    width: "76px",
+    height: "76px",
     objectFit: "cover",
     borderRadius: "14px",
-    boxShadow: "0 8px 18px rgba(15,23,42,0.10)",
+    border: "1px solid #dbeafe",
+    display: "block",
   },
+
   kpiGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-    gap: "16px",
-    marginBottom: "18px",
+    gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
+    gap: "18px",
+    marginBottom: "20px",
   },
+
   kpiCard: {
-    background: "linear-gradient(180deg, #ffffff, #f8fbff)",
-    border: "1px solid #dbe7ff",
+    background: "linear-gradient(180deg, #ffffff 0%, #f8fbff 100%)",
+    border: "1px solid #dbe7f3",
     borderRadius: "22px",
     padding: "20px",
-    boxShadow: "0 16px 30px rgba(37,99,235,0.07)",
+    boxShadow: "0 14px 28px rgba(15, 23, 42, 0.05)",
   },
+
   kpiLabel: {
     color: "#64748b",
-    fontSize: "14px",
-    marginBottom: "10px",
+    fontSize: "13px",
     fontWeight: 700,
+    marginBottom: "10px",
   },
+
   kpiValue: {
     color: "#0f172a",
     fontSize: "34px",
-    fontWeight: 800,
     lineHeight: 1,
+    fontWeight: 900,
+    letterSpacing: "-0.03em",
   },
+
   chartGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))",
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
     gap: "20px",
   },
-  chartCard: {
-    background: "rgba(255,255,255,0.92)",
-    border: "1px solid #dbe7ff",
-    borderRadius: "24px",
-    padding: "20px",
-    boxShadow: "0 18px 36px rgba(37,99,235,0.06)",
-  },
+
   chartTitle: {
-    marginTop: 0,
-    marginBottom: "16px",
+    margin: "0 0 16px 0",
+    color: "#0f172a",
     fontSize: "18px",
     fontWeight: 800,
-    color: "#0f172a",
   },
+
   chartBox: {
     width: "100%",
-    height: "300px",
+    height: "320px",
   },
 };
