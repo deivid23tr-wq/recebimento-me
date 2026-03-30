@@ -464,8 +464,8 @@ export default function App() {
                 <input
                   placeholder="Digite o cliente"
                   value={form.cliente}
-                  onChange={(e) => setForm({ ...form, cliente: e.target.value })}
-                  style={styles.input}
+                  onChange={(e) => setForm({ ...form, cliente: e.target.value.toUpperCase() })}
+                  style={{styles.input, textTransform: "uppercase"}}
                   className="app-input"
                 />
               </div>
@@ -774,7 +774,7 @@ export default function App() {
               </div>
 
               <div style={styles.chartCard}>
-                <h3 style={styles.chartTitle}>Boa x quebrada</h3>
+                <h3 style={styles.chartTitle}>Bom x Quebrado</h3>
                 <div className="app-chart-box" style={styles.chartBox}>
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -799,7 +799,7 @@ export default function App() {
               </div>
 
               <div style={styles.chartCard}>
-                <h3 style={styles.chartTitle}>Top clientes</h3>
+                <h3 style={styles.chartTitle}>Clientes</h3>
                 <div className="app-chart-box" style={styles.chartBox}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={graficoClientes}>
