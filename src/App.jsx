@@ -465,7 +465,7 @@ export default function App() {
                   placeholder="Digite o cliente"
                   value={form.cliente}
                   onChange={(e) => setForm({ ...form, cliente: e.target.value.toUpperCase() })}
-                  style={{styles.input, textTransform: "uppercase"}}
+                  style={{ ...styles.input, textTransform: "uppercase" }}
                   className="app-input"
                 />
               </div>
