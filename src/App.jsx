@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as XLSX from "xlsx";
 import { createClient } from "@supabase/supabase-js";
 import {
@@ -35,6 +35,10 @@ export default function App() {
   const [erroConfig, setErroConfig] = useState("");
   const [fotoInputKey, setFotoInputKey] = useState(Date.now());
 
+  // CORREÇÃO 3: ref para controlar a object URL da pré-visualização e poder revogá-la
+  const previewUrlRef = useRef(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
   const [form, setForm] = useState({
     material: "Quadro de topo",
     cliente: "",
@@ -52,7 +56,8 @@ export default function App() {
     material: "Todos",
   });
 
-  async function carregarDados() {
+  // CORREÇÃO 1: useCallback para estabilizar a referência e evitar re-execuções desnecessárias do useEffect
+  const carregarDados = useCallback(async () => {
     if (!supabase) {
       setErroConfig(
         "Supabase não configurado. Verifique o arquivo .env e reinicie o npm run dev."
@@ -74,10 +79,35 @@ export default function App() {
     }
 
     setCarregando(false);
-  }
+  }, []);
 
   useEffect(() => {
     carregarDados();
+  }, [carregarDados]);
+
+  // CORREÇÃO 3: helper para atualizar a foto e gerenciar o ciclo de vida da object URL
+  function atualizarFoto(arquivo) {
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
+    }
+    if (arquivo) {
+      const url = URL.createObjectURL(arquivo);
+      previewUrlRef.current = url;
+      setPreviewUrl(url);
+    } else {
+      setPreviewUrl(null);
+    }
+    setForm((prev) => ({ ...prev, foto: arquivo || null }));
+  }
+
+  // CORREÇÃO 3: revogar a URL ao desmontar o componente
+  useEffect(() => {
+    return () => {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+      }
+    };
   }, []);
 
   const quantidadeBoaAtual = useMemo(() => {
@@ -167,6 +197,13 @@ export default function App() {
         return;
       }
 
+      // CORREÇÃO 3: limpar a object URL ao resetar o formulário
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+        previewUrlRef.current = null;
+      }
+      setPreviewUrl(null);
+
       setForm({
         material: "Quadro de topo",
         cliente: "",
@@ -214,7 +251,17 @@ export default function App() {
     });
   }, [dados, filtros]);
 
+  // CORREÇÃO 5: aviso claro sobre o que será exportado
   function exportarExcel() {
+    const totalFiltrado = dadosFiltrados.length;
+    const totalGeral = dados.length;
+    const msg =
+      totalFiltrado < totalGeral
+        ? `Exportando ${totalFiltrado} registro(s) filtrado(s) de ${totalGeral} no total. Deseja continuar?`
+        : `Exportando todos os ${totalGeral} registro(s). Deseja continuar?`;
+
+    if (!window.confirm(msg)) return;
+
     const dadosFormatados = dadosFiltrados.map((item) => {
       const recebida = Number(item.quantidade_recebida) || 0;
       const quebrada = Number(item.quantidade_quebrada) || 0;
@@ -541,9 +588,7 @@ export default function App() {
                   type="file"
                   accept="image/*"
                   capture="environment"
-                  onChange={(e) =>
-                    setForm({ ...form, foto: e.target.files?.[0] || null })
-                  }
+                  onChange={(e) => atualizarFoto(e.target.files?.[0])}
                   style={styles.fileInput}
                   className="app-file-input"
                 />
@@ -552,11 +597,12 @@ export default function App() {
                 </div>
               </div>
 
-              {form.foto && (
+              {/* CORREÇÃO 3: usa previewUrl gerenciado em estado em vez de criar object URL inline */}
+              {previewUrl && (
                 <div style={{ gridColumn: "1 / -1" }}>
                   <label style={styles.label}>Pré-visualização</label>
                   <img
-                    src={URL.createObjectURL(form.foto)}
+                    src={previewUrl}
                     alt="Prévia"
                     style={styles.previewImage}
                     className="app-preview"
@@ -602,14 +648,15 @@ export default function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {dados.length === 0 ? (
+                    {/* CORREÇÃO 2: usa dadosFiltrados em vez de dados brutos */}
+                    {dadosFiltrados.length === 0 ? (
                       <tr>
                         <td colSpan="8" style={styles.tdCenter}>
                           Nenhum registro encontrado.
                         </td>
                       </tr>
                     ) : (
-                      dados.map((d) => {
+                      dadosFiltrados.map((d) => {
                         const recebida = Number(d.quantidade_recebida) || 0;
                         const quebrada = Number(d.quantidade_quebrada) || 0;
                         const boa = recebida - quebrada;
