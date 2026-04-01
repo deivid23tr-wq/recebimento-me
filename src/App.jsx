@@ -27,6 +27,50 @@ if (supabaseUrl && supabaseAnonKey) {
 
 const COLORS = ["#2563eb", "#0f172a", "#38bdf8", "#64748b", "#0ea5e9"];
 
+const CLIENTES_FIXOS = [
+  "INSP. FINAL",
+  "AB PIRAÍ",
+  "AB JUATUBA (AB MINAS)",
+  "AB SETE LAGOAS (AB N MINAS)",
+  "AB MACACU",
+  "AB RIO (NOVA RIO)",
+  "CC ITABIRITO (SPAL IND.)",
+  "CC RJ (ANDINA / JPA)",
+  "HNK ITU",
+  "NEW AGE",
+  "CC MARÍLIA",
+  "INAB TOLEDO",
+  "POTY",
+  "CC DUQUE DE CAXIAS",
+  "BALL JACAREÍ",
+  "BALL EXTREMA",
+  "BALL ÁGUAS CLARAS",
+  "BALL FRUTAL",
+  "BALL POUSO ALEGRE",
+  "BALL RECIFE",
+  "BALL BRASÍLIA",
+  "AB AGUDOS",
+  "AB ANÁPOLIS",
+  "AB CERPA",
+  "AB COLORADO",
+  "AB GUARULHOS",
+  "AB JACAREÍ",
+  "AB JAGUARIÚNA",
+  "AB LAGES",
+  "AB PONTA GROSSA",
+  "AB RIBEIRÃO",
+  "CC CAMPO GRANDE",
+  "CC DIXER",
+  "CC MS",
+  "CC RIBEIRÃO",
+  "CC SANTA MARIA",
+  "CC CVI",
+  "CC VARZEA",
+  "CERVAM",
+  "HNK JACAREÍ",
+  "NOVA MALTA",
+];
+
 export default function App() {
   const [abaAtiva, setAbaAtiva] = useState("lancamento");
   const [dados, setDados] = useState([]);
@@ -234,7 +278,7 @@ export default function App() {
         : true;
 
       const passouCliente = filtros.cliente
-        ? item.cliente?.toLowerCase().includes(filtros.cliente.toLowerCase())
+        ? item.cliente === filtros.cliente
         : true;
 
       const passouMaterial =
@@ -508,13 +552,17 @@ export default function App() {
 
               <div>
                 <label style={styles.label}>Cliente</label>
-                <input
-                  placeholder="Digite o cliente"
+                <select
                   value={form.cliente}
-                  onChange={(e) => setForm({ ...form, cliente: e.target.value.toUpperCase() })}
-                  style={{ ...styles.input, textTransform: "uppercase" }}
+                  onChange={(e) => setForm({ ...form, cliente: e.target.value })}
+                  style={styles.input}
                   className="app-input"
-                />
+                >
+                  <option value="">Selecione o cliente</option>
+                  {CLIENTES_FIXOS.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
               </div>
 
               <div>
@@ -730,21 +778,19 @@ export default function App() {
 
                 <div>
                   <label style={styles.label}>Cliente</label>
-                  <input
-                    list="clientes-list"
-                    placeholder="Filtrar cliente"
+                  <select
                     value={filtros.cliente}
                     onChange={(e) =>
                       setFiltros({ ...filtros, cliente: e.target.value })
                     }
                     style={styles.input}
                     className="app-input"
-                  />
-                  <datalist id="clientes-list">
-                    {clientesUnicos.map((cliente) => (
-                      <option key={cliente} value={cliente} />
+                  >
+                    <option value="">Todos os clientes</option>
+                    {CLIENTES_FIXOS.map((c) => (
+                      <option key={c} value={c}>{c}</option>
                     ))}
-                  </datalist>
+                  </select>
                 </div>
 
                 <div>
