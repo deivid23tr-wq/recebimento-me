@@ -69,6 +69,7 @@ const CLIENTES_FIXOS = [
   "CERVAM",
   "HNK JACAREÍ",
   "NOVA MALTA",
+  "CIDADE IMPERIAL"
 ];
 
 export default function App() {
